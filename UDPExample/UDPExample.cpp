@@ -7,11 +7,7 @@
 using namespace std;
 
 
-DWORD WINAPI QueuePush(LPVOID lp) {
 
-    cout << "Receiving data...." << endl;
-    int bytesReceived = recvfrom(udpSocket, receiveBuf, receiveBufSize, 0, (SOCKADDR*)&senderAddr, &senderAddrSize);
-}
 
 int main()
 {
@@ -43,6 +39,7 @@ int main()
         return 3;
     }
 
+    int i = 1;
     while (true) {
         
         int timer = 0;
@@ -52,7 +49,7 @@ int main()
         sockaddr_in senderAddr;
         int senderAddrSize = sizeof(senderAddr);
 
-        cout << "Receiving data...." << endl;
+        cout << "\nReceiving data...." << endl;
         int bytesReceived = recvfrom(udpSocket, receiveBuf, receiveBufSize, 0, (SOCKADDR*)&senderAddr, &senderAddrSize);
 
         if (bytesReceived == SOCKET_ERROR)
@@ -63,28 +60,25 @@ int main()
 
         receiveBuf[bytesReceived] = '\0';
         if (strstr(receiveBuf, "cola")) timer += 1;
-        if (strstr(receiveBuf, "hamburger")) timer += 10;
+        if (strstr(receiveBuf, "hamburger")) timer += 20;
         if (strstr(receiveBuf, "ice cream")) timer += 7;
 
    
-        cout << "Data: " << receiveBuf << endl;
+        cout << "Order # " <<  i << " " << receiveBuf << endl;
         cout << timer << " seconds to wait..";
         string waitMessage = "Thank you for order. Your order will be ready soon..";
 
         int sendResult = sendto(udpSocket, waitMessage.c_str(), waitMessage.length(), 0, (SOCKADDR*)&senderAddr, senderAddrSize);
         Sleep(timer * 1000);
 
-
-        const size_t sendBufSize = 1024;
-        char sendBuf[sendBufSize] = "Hello from UDPExample";
-
-
-        sendResult = sendto(udpSocket, sendBuf, strlen(sendBuf), 0, (SOCKADDR*)&senderAddr, senderAddrSize);
+        waitMessage = "Your order is done. Thank you.";
+        sendResult = sendto(udpSocket, waitMessage.c_str(), waitMessage.length(), 0, (SOCKADDR*)&senderAddr, senderAddrSize);
         if (sendResult == SOCKET_ERROR)
         {
             cout << "sendto failed with error " << WSAGetLastError() << endl;
             return 5;
         }
+        i++;
     }
     
 

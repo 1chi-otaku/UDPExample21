@@ -34,7 +34,7 @@ int main()
     cout << "Enter your order:";
     getline(cin, order);
 
-    cout << "Please wait, you are in line....." << endl;
+    cout << "Sending data..." << endl;
     int sendResult = sendto(udpSocket, order.c_str(), order.length(), 0, (SOCKADDR*)&addrTo, sizeof(addrTo));
     if (sendResult == SOCKET_ERROR)
     {
@@ -48,8 +48,9 @@ int main()
     sockaddr_in addrFrom;
     int addrFromSize = sizeof(addrFrom);
 
-    cout << "Receiving data...." << endl;
+    cout << "Please wait. You're in the queue" << endl;
     int bytesReceived = recvfrom(udpSocket, receiveBuf, receiveBufSize, 0, (SOCKADDR*)&addrFrom, &addrFromSize);
+
 
     if (bytesReceived == SOCKET_ERROR)
     {
@@ -57,6 +58,16 @@ int main()
         return 4;
     }
 
+    receiveBuf[bytesReceived] = '\0';
+    cout << "Data: " << receiveBuf << endl;
+
+    cout << "Waiting...." << endl;
+    bytesReceived = recvfrom(udpSocket, receiveBuf, receiveBufSize, 0, (SOCKADDR*)&addrFrom, &addrFromSize);
+    if (bytesReceived == SOCKET_ERROR)
+    {
+        cout << "recvfrom failed with error " << WSAGetLastError() << endl;
+        return 4;
+    }
     receiveBuf[bytesReceived] = '\0';
     cout << "Data: " << receiveBuf << endl;
 
