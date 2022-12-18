@@ -29,7 +29,7 @@ int main()
     addrTo.sin_port = htons(23000);
     inet_pton(AF_INET, "127.0.0.1", &addrTo.sin_addr.s_addr);
     cout << "-----Menu-----" << endl;
-    cout << "1\tCola\t\t1sec\n2\tHamburger\t10sec\n3\tIce Cream\t8sec\n";
+    cout << "1\tCola\t\t5sec\n2\tHamburger\t20sec\n3\tIce Cream\t8sec\n";
     string order;
     cout << "Enter your order:";
     getline(cin, order);

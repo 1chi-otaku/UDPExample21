@@ -41,7 +41,7 @@ int main()
 
     int i = 1;
     while (true) {
-        
+
         int timer = 0;
         const size_t receiveBufSize = 1024;
         char receiveBuf[receiveBufSize];
@@ -59,26 +59,40 @@ int main()
         }
 
         receiveBuf[bytesReceived] = '\0';
-        if (strstr(receiveBuf, "cola")) timer += 1;
-        if (strstr(receiveBuf, "hamburger")) timer += 20;
-        if (strstr(receiveBuf, "ice cream")) timer += 7;
+        if (strstr(receiveBuf, "cola")) timer += 5;
+        else if (strstr(receiveBuf, "Cola")) timer += 5;
 
-   
-        cout << "Order # " <<  i << " " << receiveBuf << endl;
-        cout << timer << " seconds to wait..";
-        string waitMessage = "Thank you for order. Your order will be ready soon..";
+        if (strstr(receiveBuf, "Hamburger")) timer += 20;
+        else if (strstr(receiveBuf, "hamburger")) timer += 20;
 
-        int sendResult = sendto(udpSocket, waitMessage.c_str(), waitMessage.length(), 0, (SOCKADDR*)&senderAddr, senderAddrSize);
-        Sleep(timer * 1000);
+        if (strstr(receiveBuf, "ice cream")) timer += 8;
+        else if (strstr(receiveBuf, "Ice cream")) timer += 8;
 
-        waitMessage = "Your order is done. Thank you.";
-        sendResult = sendto(udpSocket, waitMessage.c_str(), waitMessage.length(), 0, (SOCKADDR*)&senderAddr, senderAddrSize);
-        if (sendResult == SOCKET_ERROR)
-        {
-            cout << "sendto failed with error " << WSAGetLastError() << endl;
-            return 5;
+        if (timer == 0) {
+            int sendResult = sendto(udpSocket, "Your order couldn't be identified.\n", 256, 0, (SOCKADDR*)&senderAddr, senderAddrSize);
+            sendResult = sendto(udpSocket, "Please try again\n", 256, 0, (SOCKADDR*)&senderAddr, senderAddrSize);
         }
-        i++;
+        else {
+            cout << "Order # " << i << " " << receiveBuf << endl;
+            cout << timer << " seconds to wait..";
+            string seconds = std::to_string(timer);
+            string waitMessage = "Thank you for order. Your order will be in " + seconds + " seconds!";
+
+
+            int sendResult = sendto(udpSocket, waitMessage.c_str(), waitMessage.length(), 0, (SOCKADDR*)&senderAddr, senderAddrSize);
+            Sleep(timer * 1000);
+
+            waitMessage = "Your order is done. Thank you.";
+            sendResult = sendto(udpSocket, waitMessage.c_str(), waitMessage.length(), 0, (SOCKADDR*)&senderAddr, senderAddrSize);
+            if (sendResult == SOCKET_ERROR)
+            {
+                cout << "sendto failed with error " << WSAGetLastError() << endl;
+                return 5;
+            }
+            i++;
+        }
+       
+ 
     }
     
 
